@@ -1,3 +1,4 @@
+
 <script>
 // Update item quantity
 function updateCartItem(obj, rowid){
@@ -11,8 +12,6 @@ function updateCartItem(obj, rowid){
 }
 </script>
 
-
-
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
@@ -20,7 +19,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="container">
       <div class="row no-gutters slider-text align-items-center justify-content-center">
         <div class="col-md-9 ftco-animate text-center">
-            <p class="breadcrumbs"><span class="mr-2"><?php echo anchor(base_url(), 'Home'); ?></span> <span>Keranjang Laundry</span></p>
+            <p class="breadcrumbs"><span class="mr-2"><?php echo anchor(base_url(), 'Home'); ?></span> <span>Keranjang Belanja</span></p>
           <h1 class="mb-0 bread">Keranjang Laundry Saya</h1>
         </div>
       </div>
@@ -34,8 +33,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
               <div class="row">
               <div class="col-md-12 ftco-animate">
                   <div class="cart-list">
-                      <table class="table table-striped">
-                          <thead class="thead">
+                      <table class="table">
+                          <thead class="thead-primary">
                             <tr class="text-center">
                               <th>&nbsp;</th>
                               <th>&nbsp;</th>
@@ -60,13 +59,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                               
                               <td class="quantity">
                                   <div class="input-group mb-3">
-                                   <input type="number" class="form-control text-center" value="<?php echo $item["qty"]; ?>" onchange="updateCartItem(this, '<?php echo $item['rowid']; ?>')">
+                                   <input type="number" name="quantity[<?php echo $item['rowid']; ?>]" class="form-control text-center" value="<?php echo $item["qty"]; ?>" onchange="updateCartItem(this, '<?php echo $item['rowid']; ?>')">
                                 </div>
                             </td>
+
                               
                               <td class="total">Rp <?php echo format_rupiah($item['subtotal']); ?></td>
-
-                              <!-- <td class="total">Rp <?php echo $deskripsi;  ?></td> -->
                             </tr><!-- END TR-->
                               <?php endforeach; ?>
                           </tbody>
