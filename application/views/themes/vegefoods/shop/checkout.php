@@ -1,3 +1,8 @@
+<script type="text/javascript"
+            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="SB-Mid-client--YV1hM_r11K3oO6E"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
@@ -46,7 +51,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <div class="col-md-12 d-flex mb-5">
                     <div class="cart-detail cart-total p-3 p-md-4">
                         <h3 class="billing-heading mb-4">Rincian Belanja</h3>
-                        <p class="d-flex">
+                              <p class="d-flex">
+                                  <span>Product</span>
+                                  <span><?php echo $product->name; ?></span>
+                              </p>
+                              <p class="d-flex">
                                   <span>Subtotal</span>
                                   <span>Rp <?php echo format_rupiah($subtotal); ?></span>
                               </p>
@@ -60,7 +69,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                               </p>
                               <hr>
                               <p class="d-flex total-price">
-                                  <span>Total</span>
+                                  <span>Total bro</span>
                                   <span>Rp <?php echo format_rupiah($total); ?></span>
                               </p>
                               </div>
@@ -97,3 +106,78 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </form>
     </div>
   </section> <!-- .section -->
+
+
+  <!-- <form id="payment-form" method="post" action="<?=site_url()?>/snap/finish">
+<input type="hidden" name="result_type" id="result-type" value="">
+<input type="hidden" name="result_data" id="result-data" value="">
+  <div class="form-group">
+    <label for="name">name item</label>
+    <input type="text" class="form-control" id="nama" name="nama" value="<?php echo $product->name; ?>" aria-describedby="emailHelp" placeholder="Enter Name">
+    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+  </div>
+  <div class="form-group">
+    <label for="total">total</label>
+    <input type="text" class="form-control" id="total" name="total" value="<?php echo $total; ?>" placeholder="Total">
+  </div>
+
+  <button id="pay-button" class="btn btn-primary">Pay!</button>
+    
+</form> -->
+
+  <script type="text/javascript">
+    $('#pay-button').click(function (event) {
+      event.preventDefault();
+    //   $(this).attr("disabled", "disabled");
+    
+	var nama = $('#nama').val();
+	var total = $('#total').val();
+
+    $.ajax({
+	  type: 'POST',
+      url: '<?=site_url()?>/snap/token',
+	  data : {
+		  nama : nama,
+		  total : total,
+	  },
+      cache: false,
+
+      success: function(data) {
+        //location = data;
+
+        console.log('token = '+data);
+        
+        var resultType = document.getElementById('result-type');
+        var resultData = document.getElementById('result-data');
+
+        function changeResult(type,data){
+          $("#result-type").val(type);
+          $("#result-data").val(JSON.stringify(data));
+          //resultType.innerHTML = type;
+          //resultData.innerHTML = JSON.stringify(data);
+        }
+
+        snap.pay(data, {
+          
+          onSuccess: function(result){
+            changeResult('success', result);
+            console.log(result.status_message);
+            console.log(result);
+            $("#payment-form").submit();
+          },
+          onPending: function(result){
+            changeResult('pending', result);
+            console.log(result.status_message);
+            $("#payment-form").submit();
+          },
+          onError: function(result){
+            changeResult('error', result);
+            console.log(result.status_message);
+            $("#payment-form").submit();
+          }
+        });
+      }
+    });
+  });
+
+  </script>

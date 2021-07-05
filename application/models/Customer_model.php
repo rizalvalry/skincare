@@ -48,4 +48,9 @@ class Customer_model extends CI_Model {
         return $data->id;
     }
 
+    public function get_email($id) {
+        $email = $this->db->where('id', $id)->get('users')->row();
+        return $email;
+    }
+
 }
