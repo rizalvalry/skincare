@@ -332,7 +332,7 @@ class Shop extends CI_Controller {
                     $vtweb_url = $vt->vtweb_charge($transaction_data);
                     return redirect($vtweb_url);
 
-                    $this->statusorder($order_number);
+                    $this->statusorder($order_id, $status_code, $transaction_status);
 
 
                     
@@ -402,19 +402,19 @@ class Shop extends CI_Controller {
                 //     die();
 
                 
-                $result = $this->veritrans->status($order_number);
-                $data = [
-                    'order_id' => $result->order_id,
-                    'gross_amount' => $result->gross_amount,
-                    'payment_type' => $result->payment_type,
-                    'transaction_time' => $result->transaction_time,
-                    'bank' => $result->va_numbers[0]->bank,
-                    'va_number' => $result->va_numbers[0]->va_number,
-                    'status_code' => $result->status_code
+                // $result = $this->veritrans->status($order_number);
+                // $data = [
+                //     'order_id' => $result->order_id,
+                //     'gross_amount' => $result->gross_amount,
+                //     'payment_type' => $result->payment_type,
+                //     'transaction_time' => $result->transaction_time,
+                //     'bank' => $result->va_numbers[0]->bank,
+                //     'va_number' => $result->va_numbers[0]->va_number,
+                //     'status_code' => $result->status_code
 
-                ];
+                // ];
 
-                $this->db->insert('transaksi_midtrans', $data);
+                // $this->db->insert('transaksi_midtrans', $data);
                     
 
                     // if($save) {
@@ -429,12 +429,33 @@ class Shop extends CI_Controller {
 
                 // redirect('customer/orders/view/'. $order);
             break;
+            case 'result' :
+                $result = $this->veritrans->status($order_number);
+                $data = [
+                    'order_id' => $result->order_id,
+                    'gross_amount' => $result->gross_amount,
+                    'payment_type' => $result->payment_type,
+                    'transaction_time' => $result->transaction_time,
+                    'bank' => $result->va_numbers[0]->bank,
+                    'va_number' => $result->va_numbers[0]->va_number,
+                    'status_code' => $result->status_code
+        
+                ];
+        
+                $save = $this->db->insert('transaksi_midtrans', $data);
+
+                if($save) {
+                    echo "Sukses";
+                } else {
+                    echo "gagal";
+                }
+            break;                
         }
 
     }
 
 
-    public function simpanorder($params) {
+    public function simpanorder($order_id, $status_code, $transaction_status) {
         $result = $this->veritrans->status($params);
         $data = [
             'order_id' => $result->order_id,
@@ -449,7 +470,14 @@ class Shop extends CI_Controller {
 
         // print_r($data);
         // die();
-$this->db->insert('transaksi_midtrans', $data);
+        $save = $this->db->insert('transaksi_midtrans', $data);
+
+        if($save) {
+			echo "Sukses";
+		} else {
+			echo "gagal";
+		}
+
     }
 
     public function test() {
