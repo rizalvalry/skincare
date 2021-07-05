@@ -12,8 +12,8 @@ class Shop extends CI_Controller {
         ));
 
         $params = array('server_key' => 'SB-Mid-server-j-Us55kzzKRBrGV95aRebZ9H', 'production' => false);
-		$this->load->library('veritrans');
-		$this->veritrans->config($params);
+		$this->load->library('midtrans');
+		$this->midtrans->config($params);
 		$this->load->helper('url');	
 
     }
@@ -240,23 +240,25 @@ class Shop extends CI_Controller {
                 $this->session->unset_userdata('coupon_id');
 
                 $nameproduct = $this->product->product_data($id);
+                $seing = $nameproduct->name;
 
                 // Midtrans Start
-                $vt = new Veritrans;
+                // $vt = new Veritrans;
 
                 $transaction_details = array(
                     'order_id' 			=> $order_number,
                     'gross_amount' 	=> $total_price
                 );
-        
+
                 // Populate items
                 $item1_details = array(
                         'id' 			=> $order_number,
                         'price' 		=> $total_price,
                         'quantity' 	    => $total_items,
-                        'name' 			=> $nameproduct
+                        'name' 			=> $seing
                     );
         
+                $item_details = array ($item1_details);
                 // Populate customer's billing address
                 $billing_address = array(
                     'first_name' 	=> $name,
@@ -296,243 +298,55 @@ class Shop extends CI_Controller {
                 // Data yang akan dikirim untuk request redirect_url.
                 // Uncomment 'credit_card_3d_secure' => true jika transaksi ingin diproses dengan 3DSecure.
                 $transaction_data = array(
-                    'payment_type' 			=> 'vtweb', 
-                    // 'vtweb' 						=> array(
-                    //     //'enabled_payments' 	=> ['credit_card'],
-                    //     'credit_card_3d_secure' => true
-                    // ),
-                    // 'enabled_payments' 	=> $enable_payments,
-                    'transaction_details'=> $transaction_details,
-                    'item_details' 			 => $item1_details,
+                    'transaction_details' => $transaction_details,
+                    'item_details' 			 => $item_details,
                     'customer_details' 	 => $customer_details
                 );
 
-                // $convert = json_encode($transaction_data);
-                // print_r($order_number);
-                // die();
-                
-                // error_log(json_encode($transaction_data));
-                // $snapToken = $this->midtrans->getSnapToken($transaction_data);
-                // error_log($snapToken);
-                // echo $snapToken;
+                error_log(json_encode($transaction_data));
+                $snapToken = $this->midtrans->getSnapToken($transaction_data);
+                error_log($snapToken);
+                echo $snapToken;
 
-
-                
-
-                // cek status code from server live
-                // $response= $this->veritrans->vtdirect_charge($transaction_data);
-                // print_r($response);
-                // die();
-                // end
-
-
-                try
-                {
-                    
-                    $vtweb_url = $vt->vtweb_charge($transaction_data);
-                    return redirect($vtweb_url);
-
-                    $this->statusorder($order_id, $status_code, $transaction_status);
-
-
-                    
-                    // $result = json_decode($this->input->post('result_data'), true);
-                    // // print_r($result['status_code']);
-                    // // die();
-
-                    
-                    // $response= $vt->vtdirect_charge($transaction_data);
-                    // if($response) {
-
-                    //     $this->statusorder($order_number);
-                    // } else {
-                    //     echo "tidak berhasil";
-                    // }
-                    // print_r();
-                    // die();
-
-                    // if($response->status_code == 201) {
-                    //     $result = $this->veritrans->status($order_number);
-                    //     $data = [
-                    //         'order_id' => $result->order_id,
-                    //         'gross_amount' => $result->gross_amount,
-                    //         'payment_type' => $result->payment_type,
-                    //         'transaction_time' => $result->transaction_time,
-                    //         'bank' => $result->va_numbers[0]->bank,
-                    //         'va_number' => $result->va_numbers[0]->va_number,
-                    //         'status_code' => $result->status_code
-        
-                    //     ];
-        
-                    //     $save = $this->db->insert('transaksi_midtrans', $data);
-                        
-                    // } else {
-                    //     echo "gagal insert";
-                    // }
-
-                    
-
-                    // $this->statusorder()
-
-                    // $data = [
-                    //     'order_id' => $result[''],
-                    //     'gross_amount' => $result['gross_amount'],
-                    //     'payment_type' => $result['payment_type'],
-                    //     'transaction_time' => $result['transaction_time'],
-                    //     'bank' => $result['va_numbers'][0]['bank'],
-                    //     'va_number' => $result['va_numbers'][0]['va_number'],
-                    //     'pdf_url' => $result['pdf_url'],
-                    //     'status_code' => $result['status_code']
-
-                    // ];
-
-                    // $save = $this->db->insert('transaksi_midtrans', $data);
-
-                    
-
-                } 
-                catch (Exception $e) 
-                {
-                    echo $e->getMessage();	
-                }
-                // Midtrans End
-
-                // $result = $this->veritrans->status($order_number);
-                //     print_r($result);
-                //     die();
-
-                
-                // $result = $this->veritrans->status($order_number);
-                // $data = [
-                //     'order_id' => $result->order_id,
-                //     'gross_amount' => $result->gross_amount,
-                //     'payment_type' => $result->payment_type,
-                //     'transaction_time' => $result->transaction_time,
-                //     'bank' => $result->va_numbers[0]->bank,
-                //     'va_number' => $result->va_numbers[0]->va_number,
-                //     'status_code' => $result->status_code
-
-                // ];
-
-                // $this->db->insert('transaksi_midtrans', $data);
-                    
-
-                    // if($save) {
-                    //     echo "Sukses";
-                    // } else {
-                    //     echo "gagal";
-                    // }
-
-               
-
-                // $this->session->set_flashdata('order_flash', 'Order berhasil ditambahkan');
-
-                // redirect('customer/orders/view/'. $order);
-            break;
-            case 'result' :
-                $result = $this->veritrans->status($order_number);
-                $data = [
-                    'order_id' => $result->order_id,
-                    'gross_amount' => $result->gross_amount,
-                    'payment_type' => $result->payment_type,
-                    'transaction_time' => $result->transaction_time,
-                    'bank' => $result->va_numbers[0]->bank,
-                    'va_number' => $result->va_numbers[0]->va_number,
-                    'status_code' => $result->status_code
-        
-                ];
-        
-                $save = $this->db->insert('transaksi_midtrans', $data);
-
-                if($save) {
-                    echo "Sukses";
-                } else {
-                    echo "gagal";
-                }
-            break;                
+                $this->session->set_flashdata('order_flash', 'Order berhasil ditambahkan');
+                redirect('customer/orders/view/'. $order);
+            break;             
         }
 
     }
 
 
-    public function simpanorder($order_id, $status_code, $transaction_status) {
-        $result = $this->veritrans->status($params);
-        $data = [
-            'order_id' => $result->order_id,
-            'gross_amount' => $result->gross_amount,
-            'payment_type' => $result->payment_type,
-            'transaction_time' => $result->transaction_time,
-            'bank' => $result->va_numbers[0]->bank,
-            'va_number' => $result->va_numbers[0]->va_number,
-            'status_code' => $result->status_code
+    public function finish()
+    {
+    	$result = json_decode($this->input->post('result_data'), true);
+    	// echo 'RESULT <br><pre>';
+    	// var_dump($result);
+    	// echo '</pre>' ;
 
-        ];
+		$data = [
+			'order_id' => $result['order_id'],
+			'gross_amount' => $result['gross_amount'],
+			'payment_type' => $result['payment_type'],
+			'transaction_time' => $result['transaction_time'],
+			'bank' => $result['va_numbers'][0]['bank'],
+			'va_number' => $result['va_numbers'][0]['va_number'],
+			'pdf_url' => $result['pdf_url'],
+			'status_code' => $result['status_code']
 
-        // print_r($data);
-        // die();
-        $save = $this->db->insert('transaksi_midtrans', $data);
+		];
 
-        if($save) {
-			echo "Sukses";
+		$save = $this->db->insert('transaksi_midtrans', $data);
+        
+        $order_id = $this->product->orderGet($result['order_id']);
+
+		if($save) {
+			$this->session->set_flashdata('order_flash', 'Order berhasil ditambahkan');
+            redirect('customer/orders/view/'. $order_id->id);
 		} else {
 			echo "gagal";
 		}
-
     }
 
-    public function test() {
-        $order = 'DBN572117651';
-        $this->statusorder($order);
-    }
-
-    
-    public function statusorder($params)
-	{
-        // $o = $order_number;
-        $result = $this->veritrans->status($params);
-                        $data = [
-                            'order_id' => $result->order_id,
-                            'gross_amount' => $result->gross_amount,
-                            'payment_type' => $result->payment_type,
-                            'transaction_time' => $result->transaction_time,
-                            'bank' => $result->va_numbers[0]->bank,
-                            'va_number' => $result->va_numbers[0]->va_number,
-                            'status_code' => $result->status_code
-        
-                        ];
-
-                        print_r($data);
-                        die();
-    //  $this->db->insert('transaksi_midtrans', $data);
-
-        //                 print_r($data);
-        // die();
-        // $order_number = 'UMA572117946';
-        // $result = $this->veritrans->status($order_number);
-        // print_r($result);
-        // die();
-                    // print_r($result);
-                    // die();
-                    // $data = [
-                    //     'order_id' => $result['order_id'],
-                    //     'gross_amount' => $result['gross_amount'],
-                    //     'payment_type' => $result['payment_type'],
-                    //     'transaction_time' => $result['transaction_time'],
-                    //     'bank' => $result['va_numbers'][0]['bank'],
-                    //     'va_number' => $result['va_numbers'][0]['va_number'],
-                    //     'pdf_url' => $result['pdf_url'],
-                    //     'status_code' => $result['status_code']
-
-                    // ];
-
-                    // $save = $this->db->insert('transaksi_midtrans', $data);
-
-                
-		// echo 'test get status </br>';
-        // $order_id = "TKR572117914";
-        // 	print_r ($this->veritrans->status($order_id) );
-        //     die();
-	}
 
     public function cart_api()
     {

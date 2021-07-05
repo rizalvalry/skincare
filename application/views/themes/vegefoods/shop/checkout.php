@@ -19,7 +19,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
   <section class="ftco-section">
     <div class="container">
-    <form action="<?php echo site_url('shop/checkout/order'); ?>" method="POST">
+    <form action="<?php echo site_url('shop/finish'); ?>" method="POST" id="payment-form">
+    <input type="hidden" name="result_type" id="result-type" value="">
+      <input type="hidden" name="result_data" id="result-data" value="">
 
       <div class="row justify-content-center">
         <div class="col-xl-7 ftco-animate">
@@ -69,7 +71,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                               </p>
                               <hr>
                               <p class="d-flex total-price">
-                                  <span>Total bro</span>
+                                  <span>Total</span>
                                   <span>Rp <?php echo format_rupiah($total); ?></span>
                               </p>
                               </div>
@@ -77,24 +79,36 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <div class="col-md-12">
                     <div class="cart-detail p-3 p-md-4">
                         <h3 class="billing-heading mb-4">Metode Pembayaran</h3>
+                            <div id="countmesg"></div>
+                        <!-- crappy -->
+                        <div class="crappy">
                                   <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
-                                             <label><input type="radio" name="payment" class="mr-2" value="1"> Transfer bank</label>
+                                             <label><input type="radio" name="payment" class="mr-2" value="3" checked> Payment Gateway</label>
                                           </div>
                                       </div>
                                   </div>
+                                  <!-- <div class="form-group">
+                                      <div class="col-md-12">
+                                          <div class="radio">
+                                             <label><input type="radio" name="payment" id="manual" class="mr-2" value="2"> Transfer bank Manual</label>
+                                          </div>
+                                      </div>
+                                  </div> -->
                                   <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
-                                             <label><input type="radio" name="payment" class="mr-2" value="2" checked> Bayar ditempat</label>
+                                             <label><input type="radio" name="payment" id="manual" class="mr-2" value="1"> Bayar ditempat</label>
                                           </div>
                                       </div>
                                   </div>
+                                </div> 
+                                <!-- crappy -->
                               </div>
 
                               <div class="form-group text-right" style="margin-top: 10px;">
-                <input type="submit" class="btn btn-primary py-2 px-2" value="Buat Pesanan">
+                <input type="submit" class="btn btn-primary py-2 px-2" value="Buat Pesanan" id="pay-button">
             </div>
                 </div>
 
@@ -108,38 +122,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   </section> <!-- .section -->
 
 
-  <!-- <form id="payment-form" method="post" action="<?=site_url()?>/snap/finish">
-<input type="hidden" name="result_type" id="result-type" value="">
-<input type="hidden" name="result_data" id="result-data" value="">
-  <div class="form-group">
-    <label for="name">name item</label>
-    <input type="text" class="form-control" id="nama" name="nama" value="<?php echo $product->name; ?>" aria-describedby="emailHelp" placeholder="Enter Name">
-    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-  </div>
-  <div class="form-group">
-    <label for="total">total</label>
-    <input type="text" class="form-control" id="total" name="total" value="<?php echo $total; ?>" placeholder="Total">
-  </div>
-
-  <button id="pay-button" class="btn btn-primary">Pay!</button>
-    
-</form> -->
-
   <script type="text/javascript">
+$("#manual").on("click", function(){  
+  $(".crappy").hide();
+  var delay = 5 ; 
+       var url = "<?php echo site_url('shop/checkout/order'); ?>"; 
+       var timer=null
+       function countdown() { 
+           timer = setTimeout(countdown, 1000) ; 
+           $('#countmesg').html("Redirecting to Order in "  + delay  + " seconds."); 
+           delay --; 
+           if (delay < 0 ) { 
+               clearTimeout(timer);
+               window.location = url ; 
+               delay = 0 ; 
+           } 
+       } 
+       countdown() ; 
+    });
+
     $('#pay-button').click(function (event) {
       event.preventDefault();
     //   $(this).attr("disabled", "disabled");
     
-	var nama = $('#nama').val();
-	var total = $('#total').val();
+
 
     $.ajax({
-	  type: 'POST',
-      url: '<?=site_url()?>/snap/token',
-	  data : {
-		  nama : nama,
-		  total : total,
-	  },
+      url: '<?=site_url()?>shop/checkout/order',
       cache: false,
 
       success: function(data) {
