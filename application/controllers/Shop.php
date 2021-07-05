@@ -371,10 +371,6 @@ class Shop extends CI_Controller {
                     // }
 
                     
-                    
-                    
-                    
-
 
                     // $this->statusorder()
 
@@ -442,12 +438,12 @@ class Shop extends CI_Controller {
         $result = $this->veritrans->status($params);
         $data = [
             'order_id' => $result->order_id,
-            // 'gross_amount' => $result->gross_amount,
-            // 'payment_type' => $result->payment_type,
-            // 'transaction_time' => $result->transaction_time,
-            // 'bank' => $result->va_numbers[0]->bank,
-            // 'va_number' => $result->va_numbers[0]->va_number,
-            // 'status_code' => $result->status_code
+            'gross_amount' => $result->gross_amount,
+            'payment_type' => $result->payment_type,
+            'transaction_time' => $result->transaction_time,
+            'bank' => $result->va_numbers[0]->bank,
+            'va_number' => $result->va_numbers[0]->va_number,
+            'status_code' => $result->status_code
 
         ];
 
