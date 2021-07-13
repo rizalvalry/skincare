@@ -308,9 +308,76 @@ class Shop extends CI_Controller {
                 error_log($snapToken);
                 echo $snapToken;
 
-                $this->session->set_flashdata('order_flash', 'Order berhasil ditambahkan');
-                redirect('customer/orders/view/'. $order);
-            break;             
+                // $this->session->set_flashdata('order_flash', 'Order berhasil ditambahkan');
+            break;       
+            case 'cod' :
+                $quantity = $this->session->userdata('order_quantity');
+
+                $user_id = get_current_user_id();
+                $coupon_id = $this->session->userdata('coupon_id');
+                $order_number = $this->_create_order_number($quantity, $user_id, $coupon_id);
+                $order_date = date('Y-m-d H:i:s');
+                $total_price = $this->session->userdata('total_price');
+                $total_items = count($quantity);
+                $payment = $this->input->post('payment');
+
+                $name = $this->input->post('name');
+                $phone_number = $this->input->post('phone_number');
+                $address = $this->input->post('address');
+                $note = $this->input->post('note');
+
+                $delivery_data = array(
+                    'customer' => array(
+                        'name' => $name,
+                        'phone_number' => $phone_number,
+                        'address' => $address
+                    ),
+                    'note' => $note
+                );
+
+                $delivery_data = json_encode($delivery_data, true);
+
+                $order = array(
+                    'user_id' => $user_id,
+                    'coupon_id' => $coupon_id,
+                    'order_number' => $order_number,
+                    'order_status' => 1,
+                    'order_date' => $order_date,
+                    'total_price' => $total_price,
+                    'total_items' => $total_items,
+                    'payment_method' => $payment,
+                    'delivery_data' => $delivery_data
+                );
+                
+                $get = $this->customer->get_email($user_id);
+                // print_r();
+                // die();
+                $order = $this->product->create_order($order);
+
+
+                $n = 0;
+                foreach ($quantity as $id => $data)
+                {
+                    $items[$n]['order_id'] = $order;
+                    $items[$n]['product_id'] = $id;
+                    $items[$n]['order_qty'] = $data['qty'];
+                    $items[$n]['order_price'] = $data['price'];
+
+                    $n++;
+                }
+
+                $this->product->create_order_items($items);
+
+                $this->cart->destroy();
+                $this->session->unset_userdata('order_quantity');
+                $this->session->unset_userdata('total_price');
+                $this->session->unset_userdata('coupon_id');
+
+                $nameproduct = $this->product->product_data($id);
+                $seing = $nameproduct->name;
+
+                redirect('customer/orders');
+            break;      
         }
 
     }

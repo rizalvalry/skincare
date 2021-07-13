@@ -81,7 +81,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <h3 class="billing-heading mb-4">Metode Pembayaran</h3>
                             <div id="countmesg"></div>
                         <!-- crappy -->
-                        <div class="crappy">
+                        <div class="crappy" id="myForm">
                                   <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
@@ -92,14 +92,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                   <!-- <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
-                                             <label><input type="radio" name="payment" id="manual" class="mr-2" value="2"> Transfer bank Manual</label>
+                                             <label><input type="radio" name="payment" class="mr-2" value="2"> Transfer bank Manual</label>
                                           </div>
                                       </div>
                                   </div> -->
                                   <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
-                                             <label><input type="radio" name="payment" id="manual" class="mr-2" value="1"> Bayar ditempat</label>
+                                             <label><input type="radio" name="payment" class="mr-2" value="1"> Bayar ditempat</label>
                                           </div>
                                       </div>
                                   </div>
@@ -109,6 +109,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                               <div class="form-group text-right" style="margin-top: 10px;">
                 <input type="submit" class="btn btn-primary py-2 px-2" value="Buat Pesanan" id="pay-button">
+                <!-- <button type="button" class="btn btn-danger py-2 px-2"  id="cod-button">Buat Pesanan</button> -->
             </div>
                 </div>
 
@@ -123,9 +124,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
   <script type="text/javascript">
-$("#manual").on("click", function(){  
-  $(".crappy").hide();
-  var delay = 5 ; 
+// $('#cod-button').hide();
+
+$('#myForm input').on('change', function() {
+if($('input[name=payment]:checked', '#myForm').val() == 1) {
+  console.log("1");
+
+
+      $('#cod-button').click(function (event) {
+      var delay = 5 ; 
        var url = "<?php echo site_url('shop/checkout/cod'); ?>"; 
        var timer=null
        function countdown() { 
@@ -139,11 +146,15 @@ $("#manual").on("click", function(){
            } 
        } 
        countdown() ; 
-    });
-
-    $('#pay-button').click(function (event) {
+      });
+    } else {
+console.log("gateway");
+      $('#pay-button').click(function (event) {
+        
       event.preventDefault();
     //   $(this).attr("disabled", "disabled");
+    
+
 
     $.ajax({
       url: '<?=site_url()?>shop/checkout/order',
@@ -186,5 +197,11 @@ $("#manual").on("click", function(){
       }
     });
   });
+
+  }
+});
+
+
+    
 
   </script>
