@@ -108,7 +108,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                               </div>
 
                               <div class="form-group text-right" style="margin-top: 10px;">
-                <input type="submit" class="btn btn-primary py-2 px-2" value="Buat Pesanan" id="pay-button">
+                <input type="submit" class="btn btn-primary py-2 px-2" value="Buat Pesanan bro" id="pay-button">
             </div>
                 </div>
 

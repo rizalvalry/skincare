@@ -39,6 +39,11 @@ class Product_model extends CI_Model {
 
         return $this->db->insert_id();
     }
+    
+    public function add_new_sub_product($sub_product)
+    {
+        $this->db->insert('sub_products', $sub_product);
+    }
 
     public function is_product_exist($id)
     {

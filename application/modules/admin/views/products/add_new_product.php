@@ -97,6 +97,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                   <textarea name="description" class="form-control" id="desc"><?php echo set_value('description'); ?></textarea>
                   <?php echo form_error('description'); ?>
                 </div>
+                
+                <div id="sub-product-section">
+                      <h3>Sub Produk</h3>
+                      <div class="sub-product-item">
+                        <label for="sub_product_name">Nama Sub Produk:</label>
+                        <input type="text" name="sub_product_names[]" class="form-control">
+                        <label for="sub_product_price">Harga Sub Produk:</label>
+                        <input type="text" name="sub_product_prices[]" class="form-control">
+                      </div>
+                  </div>
               
               </div>
               
@@ -123,5 +133,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </div>
         </div>
       </div>
+      
+      
+
+<script>
+  document.getElementById('add-sub-product').addEventListener('click', function() {
+    var subProductSection = document.getElementById('sub-product-section');
+    var newSubProduct = document.createElement('div');
+    newSubProduct.className = 'sub-product-item';
+    newSubProduct.innerHTML = `
+      <label for="sub_product_name">Nama Sub Produk:</label>
+      <input type="text" name="sub_product_names[]" class="form-control">
+      <label for="sub_product_price">Harga Sub Produk:</label>
+      <input type="text" name="sub_product_prices[]" class="form-control">
+    `;
+    subProductSection.appendChild(newSubProduct);
+  });
+</script>
+
 
     </form>

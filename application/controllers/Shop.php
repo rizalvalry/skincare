@@ -27,20 +27,30 @@ class Shop extends CI_Controller {
         else
         {
             if ($this->product->is_product_exist($id, $sku))
-            {
-                $data = $this->product->product_data($id);
+        {
+            // Ambil data produk
+            $data = $this->product->product_data($id);
+            
+            // Ambil sub-produk yang terkait dengan produk ini
+            $sub_products = $this->product->get_sub_products($id);
+            
+            // Ambil produk terkait
+            $related_products = $this->product->related_products($data->id, $data->category_id);
 
-                $product['product'] = $data;
-                $product['related_products'] = $this->product->related_products($data->id, $data->category_id);
+            // Siapkan data untuk dikirimkan ke view
+            $product['product'] = $data;
+            $product['sub_products'] = $sub_products;
+            $product['related_products'] = $related_products;
 
-                get_header($data->name .' | '. get_settings('store_tagline'));
-                get_template_part('shop/view_single_product', $product);
-                get_footer();
-            }
-            else
-            {
-                show_404();
-            }
+            // Load header, view, dan footer
+            get_header($data->name .' | '. get_settings('store_tagline'));
+            get_template_part('shop/view_single_product', $product);
+            get_footer();
+        }
+        else
+        {
+            show_404();
+        }
         }
     }
 

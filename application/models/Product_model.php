@@ -45,6 +45,13 @@ class Product_model extends CI_Model {
     {
         return $this->db->where(array('id !=' => $current, 'category_id' => $category))->limit(4)->get('products')->result();
     }
+    
+    public function get_sub_products($product_id) {
+        $this->db->where('product_id', $product_id);
+        $query = $this->db->get('sub_products');
+        return $query->result();
+    }
+
 
     public function getSku() {
         $this->db->select('sku');

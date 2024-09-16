@@ -72,6 +72,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <p style="color: #000;">Tersedia <?php echo $product->stock; ?> <?php echo $product->product_unit; ?></p>
                 </div>
             </div>
+            
+            <div class="col-md-12 mb-4">
+              <!-- Sub-produk selection -->
+                <h5>Pilih Sub-Produk:</h5>
+                <?php if (count($sub_products) > 0): ?>
+                    <ul class="list-group">
+                        <?php foreach ($sub_products as $sub_product): ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <input type="checkbox" class="sub-product-checkbox" data-price="<?php echo $sub_product->price; ?>" id="sub_product_<?php echo $sub_product->id; ?>">
+                                    <label for="sub_product_<?php echo $sub_product->id; ?>"><?php echo $sub_product->name; ?></label>
+                                </div>
+                                <span class="badge badge-primary badge-pill">Rp <?php echo format_rupiah($sub_product->price); ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <p>Tidak ada sub-produk tersedia.</p>
+                <?php endif; ?>
+                </div>
+            
             <p><a href="#" class="btn btn-black btn-sm py-3 px-5 add-cart cart-btn" data-sku="<?php echo $product->sku; ?>" data-name="<?php echo $product->name; ?>" data-price="<?php echo ($product->current_discount > 0) ? ($product->price - $product->current_discount) : $product->price; ?>" data-id="<?php echo $product->id; ?>">Add to Cart</a></p>
               </div>
           </div>
@@ -131,41 +152,64 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           </div>
       </div>
   </section>
+  
+<script>
+    $(document).ready(function(){
+        // Mendapatkan harga dasar produk dari PHP
+        var basePrice = <?php echo ($product->current_discount > 0) ? ($product->price - $product->current_discount) : $product->price; ?>;
 
-  <script>
-		$(document).ready(function(){
+        // Format number as Rupiah
+        function formatRupiah(number) {
+            return 'Rp ' + number.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
 
-		var quantitiy=0;
-		   $('.quantity-right-plus').click(function(e){
-		        
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		            
-		            $('#quantity').val(quantity + 1);
-                    $('.cart-btn').attr('data-qty', quantity + 1);
-		          
-		            // Increment
-		        
-		    });
+        // Fungsi untuk memperbarui harga total
+        function updatePrice() {
+            var selectedSubProductPrice = 0;
 
-		     $('.quantity-left-minus').click(function(e){
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		      
-		            // Increment
-		            if(quantity>0){
-		                $('#quantity').val(quantity - 1);
-                        $('.cart-btn').attr('data-qty', quantity - 1);
-		            }
-		    });
-		    
-		});
-	</script>
+            // Iterasi melalui semua checkbox sub-produk yang dicentang
+            $('.sub-product-checkbox:checked').each(function() {
+                selectedSubProductPrice += parseFloat($(this).data('price'));
+            });
+
+            // Hitung harga akhir (harga dasar + harga sub-produk)
+            var finalPrice = basePrice + selectedSubProductPrice;
+            console.log('Harga Akhir (Calculated):', finalPrice); // Debugging
+
+            // Update teks elemen harga
+            $('.price-sale').text(formatRupiah(finalPrice));
+            console.log('Harga Sale Text Set To:', formatRupiah(finalPrice)); // Debugging
+
+            // Update atribut data-price dari tombol add-to-cart
+            $('.cart-btn').attr('data-price', finalPrice);
+        }
+
+        // Panggil updatePrice pada saat awal untuk mengatur harga awal
+        updatePrice();
+
+        // Perbarui harga saat checkbox sub-produk dicentang atau tidak dicentang
+        $('.sub-product-checkbox').change(function() {
+            updatePrice();
+        });
+
+        // Penanganan klik untuk tombol quantity
+        $('.quantity-right-plus').click(function(e) {
+            e.preventDefault();
+            var quantity = parseInt($('#quantity').val());
+            $('#quantity').val(quantity + 1);
+            $('.cart-btn').attr('data-qty', quantity + 1);
+            updatePrice();
+        });
+
+        $('.quantity-left-minus').click(function(e) {
+            e.preventDefault();
+            var quantity = parseInt($('#quantity').val());
+            if (quantity > 1) {
+                $('#quantity').val(quantity - 1);
+                $('.cart-btn').attr('data-qty', quantity - 1);
+                updatePrice();
+            }
+        });
+    });
+</script>
+

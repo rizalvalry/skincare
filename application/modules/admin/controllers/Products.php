@@ -118,7 +118,7 @@ class Products extends CI_Controller {
     public function add_product()
     {
         $this->form_validation->set_error_delimiters('<div class="form-error text-danger font-weight-bold">', '</div>');
-
+    
         $this->form_validation->set_rules('name', 'Nama produk', 'trim|required|min_length[4]|max_length[255]');
         $this->form_validation->set_rules('price', 'Harga produk', 'trim|required');
         $this->form_validation->set_rules('stock', 'Stok barang', 'required|numeric');
@@ -136,21 +136,20 @@ class Products extends CI_Controller {
             $price = $this->input->post('price');
             $stock = $this->input->post('stock');
             $unit = $this->input->post('unit');
-            $desc = $this->input->post('desc');
+            $desc = $this->input->post('description');  // Perbaiki variabel deskripsi
             $date = date('Y-m-d H:i:s');
-
+    
             $config['upload_path'] = './assets/uploads/products/';
             $config['allowed_types'] = 'jpg|png|jpeg';
             $config['max_size'] = 2048;
-
+    
             $this->load->library('upload', $config);
-
-            if ( isset($_FILES['picture']) && @$_FILES['picture']['error'] == '0')
+    
+            if (isset($_FILES['picture']) && $_FILES['picture']['error'] == 0)
             {
-                if ( ! $this->upload->do_upload('picture'))
+                if (!$this->upload->do_upload('picture'))
                 {
                     $error = array('error' => $this->upload->display_errors());
-
                     show_error($error);
                 }
                 else
@@ -159,28 +158,51 @@ class Products extends CI_Controller {
                     $file_name = $upload_data['file_name'];
                 }
             }
-
+    
+            // Generate SKU
             $category_data = $this->product->category_data($category_id);
             $category_name = $category_data->name;
-
             $sku = create_product_sku($name, $category_name, $price, $stock);
-
-            $product['category_id'] = $category_id;
-            $product['sku'] = $sku;
-            $product['name'] = $name;
-            $product['description'] = $desc;
-            $product['price'] = $price;
-            $product['stock'] = $stock;
-            $product['product_unit'] = $unit;
-            $product['picture_name'] = $file_name;
-            $product['add_date'] = $date;
-
-            $this->product->add_new_product($product);
+    
+            // Siapkan data produk utama
+            $product = [
+                'category_id' => $category_id,
+                'sku' => $sku,
+                'name' => $name,
+                'description' => $desc,
+                'price' => $price,
+                'stock' => $stock,
+                'product_unit' => $unit,
+                'picture_name' => isset($file_name) ? $file_name : null,
+                'add_date' => $date
+            ];
+    
+            // Simpan produk utama dan dapatkan product_id
+            $product_id = $this->product->add_new_product($product);
+    
+            // Handle sub-products
+            $sub_product_names = $this->input->post('sub_product_names');
+            $sub_product_prices = $this->input->post('sub_product_prices');
+    
+            if (!empty($sub_product_names) && !empty($sub_product_prices)) {
+                foreach ($sub_product_names as $key => $sub_name) {
+                    if (!empty($sub_name) && isset($sub_product_prices[$key])) {
+                        $sub_price = $sub_product_prices[$key];
+                        $sub_product_data = [
+                            'product_id' => $product_id,
+                            'name' => $sub_name,
+                            'price' => $sub_price
+                        ];
+                        $this->product->add_new_sub_product($sub_product_data);
+                    }
+                }
+            }
+    
             $this->session->set_flashdata('add_new_product_flash', 'Produk baru berhasil ditambahkan!');
-
             redirect('admin/products/add_new_product');
         }
     }
+
 
     public function edit($id = 0)
     {

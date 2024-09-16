@@ -141,14 +141,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <div class="col-md-6 col-lg-3 ftco-animate">
               <div class="product">
                   <a href="<?php echo site_url('shop/product/'. $product->id .'/'. $product->sku .'/'); ?>" class="img-prod">
-                      <img class="img-fluid" src="<?php echo base_url('assets/uploads/products/'. $product->picture_name); ?>" alt="<?php echo $product->name; ?>">
+                      <img class="img-fluid" src="<?php echo base_url('assets/uploads/products/'. $product->picture_name); ?>" alt="<?php echo substr($product->name, 0, -1); ?>">
                       <?php if ($product->current_discount > 0) : ?>
                         <span class="status"><?php echo count_percent_discount($product->current_discount, $product->price, 0); ?>%</span>
                       <?php endif; ?>
                       <div class="overlay"></div>
                   </a>
                   <div class="text py-3 pb-4 px-3 text-center">
-                      <h3><a href="<?php echo site_url('shop/product/'. $product->id .'/'. $product->sku .'/'); ?>"><?php echo $product->name; ?></a></h3>
+                      <h3><a href="<?php echo site_url('shop/product/'. $product->id .'/'. $product->sku .'/'); ?>"><?php echo substr($product->name, 12, -5); ?></a></h3>
                       <div class="d-flex">
                           <div class="pricing">
                               <p class="price">
