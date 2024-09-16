@@ -38,7 +38,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="<?php echo get_theme_uri('js/jquery-migrate-3.0.1.min.js'); ?>"></script>
   </head>
   <body class="goto-here">
-		<div class="py-1 bg-primary">
+		<!-- <div class="py-1 bg-primary"> -->
     	<!-- <div class="container">
     		<div class="row no-gutters d-flex align-items-start align-items-center px-md-0">
 	    		<div class="col-lg-12 d-block">
