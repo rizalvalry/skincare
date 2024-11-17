@@ -52,7 +52,7 @@ class Shop extends CI_Controller {
         $ongkir = ($cart['total_cart'] >= get_settings('min_shop_to_free_shipping_cost')) ? 0 : get_settings('shipping_cost');
         $cart['total_price'] = $cart['total_cart'] + $ongkir;
 
-        get_header('Keranjang Laundry');
+        get_header('Cek Makanan');
         get_template_part('shop/cart', $cart);
         get_footer();
     }

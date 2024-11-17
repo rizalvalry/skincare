@@ -11266,6 +11266,20 @@ h5,
     }
 }
 
+.slider-item {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Memastikan slider menyesuaikan tinggi layar perangkat */
+}
+
+@media (max-width: 768px) {
+    .slider-item {
+        height: 70vh; /* Tinggi slider yang lebih kecil untuk perangkat yang lebih kecil */
+    }
+}
+
+
 .owl-carousel.home-slider .slider-item .overlay {
     position: absolute;
     top: 0;
