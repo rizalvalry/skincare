@@ -50,6 +50,58 @@ class Midtrans {
           Midtrans::SNAP_PRODUCTION_BASE_URL : Midtrans::SNAP_SANDBOX_BASE_URL;
     }
 
+	public static function refund($order_id, $params) {
+		return self::request(
+			self::getBaseUrl() . $order_id . '/qr/qr-mpm-refund',
+			self::$serverKey,
+			$params,
+			false
+		);
+	}
+	
+	public static function refundDirect($order_id, $params) {
+		return self::request(
+			self::getBaseUrl() . $order_id . '/refund/online/direct',
+			self::$serverKey,
+			$params,
+			false
+		);
+	}
+
+	private static function request($url, $serverKey, $data, $isGet = false) {
+		$curl = curl_init();
+		$auth = base64_encode($serverKey . ':');
+		$headers = [
+			'Authorization: Basic ' . $auth,
+			'Content-Type: application/json',
+		];
+	
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+		
+	
+		if (!$isGet) {
+			curl_setopt($curl, CURLOPT_POST, 1);
+			curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+		}
+	
+		$response = curl_exec($curl);
+		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		curl_close($curl);
+	
+		$decodedResponse = json_decode($response, true);
+		if ($httpCode != 200) {
+			throw new Exception('Midtrans API error: ' . $response);
+		}
+	
+		return $decodedResponse;
+	}
+	
+	
+
 	/**
 	 * Send GET request
 	 * @param string  $url
