@@ -64,7 +64,7 @@ class Shop extends CI_Controller {
         $ongkir = ($cart['total_cart'] >= get_settings('min_shop_to_free_shipping_cost')) ? 0 : get_settings('shipping_cost');
         $cart['total_price'] = $cart['total_cart'] + $ongkir;
 
-        get_header('Cek Makanan');
+        get_header('Keranjang Makanan');
         get_template_part('shop/cart', $cart);
         get_footer();
     }
@@ -91,6 +91,7 @@ class Shop extends CI_Controller {
     
     public function checkout($action = '')
     {
+
         if ( ! is_login()) {
             $coupon = $this->input->post('coupon_code');
             $quantity = $this->input->post('quantity');
@@ -102,6 +103,7 @@ class Shop extends CI_Controller {
         }
         switch ($action)
         {
+
             default :
                 $coupon = $this->input->post('coupon_code') ? $this->input->post('coupon_code') : $this->session->userdata('_temp_coupon');
                 $quantity = $this->input->post('quantity') ? $this->input->post('quantity') : $this->session->userdata('_temp_quantity');
@@ -197,7 +199,8 @@ class Shop extends CI_Controller {
                 $order_date = date('Y-m-d H:i:s');
                 $total_price = $this->session->userdata('total_price');
                 $total_items = count($quantity);
-                $payment = $this->input->post('payment');
+                // $payment = $this->input->post('payment');
+                $payment = 2;
 
                 $name = $this->input->post('name');
                 $phone_number = $this->input->post('phone_number');
@@ -331,7 +334,8 @@ class Shop extends CI_Controller {
                 $order_date = date('Y-m-d H:i:s');
                 $total_price = $this->session->userdata('total_price');
                 $total_items = count($quantity);
-                $payment = $this->input->post('payment');
+				$payment = 1;
+				
 
                 $name = $this->input->post('name');
                 $phone_number = $this->input->post('phone_number');
@@ -360,6 +364,8 @@ class Shop extends CI_Controller {
                     'payment_method' => $payment,
                     'delivery_data' => $delivery_data
                 );
+
+				
                 
                 $get = $this->customer->get_email($user_id);
                 // print_r();
@@ -399,7 +405,6 @@ class Shop extends CI_Controller {
     {
     	$result = json_decode($this->input->post('result_data'), true);
     	// echo 'RESULT <br><pre>';
-    	// var_dump($result);
     	// echo '</pre>' ;
 
 		$data = [
@@ -425,6 +430,33 @@ class Shop extends CI_Controller {
 			echo "gagal";
 		}
     }
+
+	// refund
+	public function refund_transaction() {
+		// Parameter refund
+		$params = array(
+			'refund_key' => uniqid("refund-"), // Refund key harus unik
+			'amount' => 10000,                // Nominal refund
+			'reason' => 'Item out of stock'   // Alasan refund
+		);
+	
+		try {
+			// Proses refund
+			$order_id = 'EBG22112417896'; // Ganti dengan Order ID yang valid
+			$refund = $this->midtrans->refund($order_id, $params);
+			print_r($status);
+	
+			// Tampilkan hasil
+			if ($refund) {
+				echo "Refund berhasil: ";
+				var_dump($refund);
+			}
+		} catch (Exception $e) {
+			// Jika terjadi error
+			echo "Refund gagal: " . $e->getMessage();
+		}
+	}
+	
 
 
     public function cart_api()
