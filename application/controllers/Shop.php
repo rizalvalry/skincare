@@ -432,27 +432,22 @@ class Shop extends CI_Controller {
     }
 
 	// refund
-	public function refund_transaction() {
-		// Parameter refund
+	public function refund_transaction($order_id) {
 		$params = array(
-			'refund_key' => uniqid("refund-"), // Refund key harus unik
-			'amount' => 10000,                // Nominal refund
-			'reason' => 'Item out of stock'   // Alasan refund
+			'refund_key' => uniqid("refund-"),
+			'amount' => 10000,               
+			'reason' => 'Item out of stock'  
 		);
 	
 		try {
-			// Proses refund
-			$order_id = 'EBG22112417896'; // Ganti dengan Order ID yang valid
 			$refund = $this->midtrans->refund($order_id, $params);
 			print_r($status);
 	
-			// Tampilkan hasil
 			if ($refund) {
 				echo "Refund berhasil: ";
 				var_dump($refund);
 			}
 		} catch (Exception $e) {
-			// Jika terjadi error
 			echo "Refund gagal: " . $e->getMessage();
 		}
 	}
