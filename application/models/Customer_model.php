@@ -53,4 +53,9 @@ class Customer_model extends CI_Model {
         return $email;
     }
 
+    public function get_customer_location($id) {
+        $longlat = $this->db->where('user_id', $id)->get('customers')->row();
+        return $longlat;
+    }
+
 }
