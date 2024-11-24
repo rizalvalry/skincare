@@ -21,76 +21,11 @@ class Profile extends CI_Controller {
         $params['title'] = $data->name;
         $user['user'] = $data;
         $user['flash'] = $this->session->flashdata('profile');
-		
-		$latitude = $user['user']->latitude;
-		$longitude = $user['user']->longitude;
-		
-		// Panggil fungsi get_address_from_coordinates untuk mendapatkan alamat
-		$user['user']->api_address = $this->get_address_from_coordinates($latitude, $longitude);
-
-		// var_dump($user);die();
 
         $this->load->view('header', $params);
         $this->load->view('profile', $user);
         $this->load->view('footer');
     }
-
-	public function get_address_from_coordinates($latitude, $longitude) {
-		// URL untuk request ke OpenStreetMap API
-		$url = "https://nominatim.openstreetmap.org/reverse?lat=$latitude&lon=$longitude&format=json&addressdetails=1";
-		
-		// Inisialisasi cURL
-		$ch = curl_init();
-	
-		// Set opsi cURL untuk mengatur User-Agent
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout setelah 10 detik
-		curl_setopt($ch, CURLOPT_USERAGENT, 'MyAppName/1.0 (contact@example.com)'); // Sesuaikan dengan nama aplikasi Anda
-	
-		// Eksekusi cURL
-		$response = curl_exec($ch);
-	
-		// Cek error cURL
-		if(curl_errno($ch)) {
-			$error_msg = curl_error($ch);
-			curl_close($ch);
-			return "cURL Error: " . $error_msg;
-		}
-		
-		// Tutup cURL
-		curl_close($ch);
-	
-		// Cek apakah respons berhasil
-		if ($response) {
-			$data = json_decode($response, true);
-	
-			// Pastikan ada data address
-			if (isset($data['address'])) {
-				$address = $data['address'];
-	
-				// Ambil informasi alamat yang lebih lengkap
-				$village = isset($address['village']) ? $address['village'] : '';
-				$district = isset($address['city_district']) ? $address['city_district'] : '';
-				$city = isset($address['city']) ? $address['city'] : '';
-				$state = isset($address['state']) ? $address['state'] : '';
-				$postcode = isset($address['postcode']) ? $address['postcode'] : '';
-				$country = isset($address['country']) ? $address['country'] : '';
-	
-				// Gabungkan alamat dengan format yang diinginkan
-				$full_address = "$village, $district, $city, $state, $postcode, $country";
-	
-				return $full_address;
-			} else {
-				return 'Alamat tidak ditemukan';
-			}
-		} else {
-			return 'Error dalam menghubungi API';
-		}
-	}
-	
-	
-	
 
     public function edit_name()
     {
