@@ -6,6 +6,8 @@ application/config/config.php
 application/config/database.php
 application/controllers/Shop-snap.php
 application/controllers/Snap.php
+application/helpers/global_helper.php
+application/views/themes/vegefoods/shop/checkout.php
 
 .htaccess
 application/logs/*

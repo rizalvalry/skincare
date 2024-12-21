@@ -11,7 +11,8 @@ class Shop extends CI_Controller {
             'customer_model' => 'customer'
         ));
 
-        $params = array('server_key' => 'SB-Mid-server-j-Us55kzzKRBrGV95aRebZ9H', 'production' => false);
+        $params = get_midtrans_params();
+        
 		$this->load->library('midtrans');
 		$this->midtrans->config($params);
 		$this->load->helper('url');	
